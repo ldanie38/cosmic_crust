@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='order.css') }}">
+</head>
+<body>
+    <h1>Order Confirmation</h1>
+
+    <div class="order-summary">
+        <h2>Thank you for your order</h2>
+        <p><strong>Pizza:</strong> {{ order.pizza_name }}</p>
+        <p><strong>Size:</strong> {{ order.size }}</p>
+        <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+        <p><strong>Order Date:</strong> {{ order.created_at.strftime("%B %d, %Y %H:%M") }}</p>
+        {% if order.instructions %}
+        <p><strong>Special Instructions:</strong> {{ order.instructions }}</p>
+    {% else %}
+        <p><strong>Special Instructions:</strong> None provided</p>
+    {% endif %}
+    
+        
+        <h3> Delivery is on its way !</h3>
+    </div>
+
+    <br>
+    <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>
