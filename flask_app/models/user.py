@@ -19,8 +19,13 @@ class User:
 
     @classmethod
     def save(cls, data):
+        data["password"] = data["password"].decode("utf-8")
         query = '''INSERT INTO customers (first_name, last_name, email, password)
                    VALUES (%(first_name)s, %(last_name)s, %(email)s, %(password)s);'''
+        print(f"Data being inserted: {data}")
+        print("Data structure:", data)
+        print("Query:", query)
+
         return connectToMySQL(db).query_db(query, data)
 
 
