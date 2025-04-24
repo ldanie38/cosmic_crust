@@ -4,6 +4,36 @@
     padding: 0;
     box-sizing: border-box;
   }
+  /* Global Box Sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+form {
+    background-color: #f9e1e8; /* soft vintage pink */
+    border: 2px solid #d36c6b; /* subtle red/pink border */
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 450px;
+    width: 100%;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    margin-top: 100px;
+}
+
+img {
+    display: block;
+    border: 2px solid #d36c6b; 
+    padding: 20px;
+    border-radius: 8px; /* match the form's border-radius */
+    max-width: 450px;
+    width: 100%;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
   
   /* Body styling: vintage cream background with a subtle textured look,
      paired with a classic serif font for a timeless vibe */
@@ -21,6 +51,13 @@
     /*background-image: url('img/pizza.jpg');
     background-size: cover;
     background-attachment: fixed; */
+  }
+  .pizza{
+    display:flex;
+    flex-direction: row;
+    gap:50px;
+
+   
   }
   
   /* Heading styling: a retro dark green gives a calm vintage tone */
@@ -49,6 +86,18 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     margin-top: 100px;
   }
+  img {
+    display: block;
+    border: 2px solid #d36c6b; 
+    padding: 20px;
+    border-radius: 8px; /* match the form's border-radius */
+    max-width: 450px;
+    width: 100%;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+
   
   /* Label styling: brings attention using a warm hint of red/pink */
   label {

@@ -30,10 +30,7 @@
     </section>
   {% endif %}
 
-
-      
-      
-
+<div class='pizza'>
     <form action="/order_pizza" method="POST">
         <label for="pizza_name">Choose Your Pizza:</label>
         <select id="pizza_name" name="pizza_name" required>
@@ -65,6 +62,13 @@
         <br><br>
         <button type="submit">Place Order</button>
     </form>
+    <img src="static/img/pizza.jpg" alt="A delicious cosmic pizza" width="400">
+
+</div>
+      
+      
+
+   
     <!-- Signed Out Link -->
     <a href="/logout" id="signOutLink">Sign Out</a>
 
