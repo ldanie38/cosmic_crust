@@ -33,10 +33,7 @@ def register():
 
 
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect('/')
+
 
 
 @app.route('/dashboard')
@@ -116,3 +113,10 @@ def login_user():
         return redirect('/dashboard')
 
     return redirect('/dashboard')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
+
+

@@ -4,45 +4,41 @@ from urllib.parse import urlparse
 
 class MySQLConnection:
     def __init__(self, db):
-        # Try to get the database URL from JawsDB or ClearDB
-        db_url = os.environ.get("JAWSDB_URL") or os.environ.get("CLEARDB_DATABASE_URL")
-        if db_url:
-            url = urlparse(db_url)
-            connection = pymysql.connect(
-                host=url.hostname,
-                port=url.port or 3306,
-                user=url.username,
-                password=url.password,
-                db=url.path.lstrip('/'),
-                charset='utf8mb4',
-                cursorclass=pymysql.cursors.DictCursor,
-                autocommit=False
-            )
-        else:
-            # Use local settings for development
-            connection = pymysql.connect(
-                host='localhost',
-                user='root',
-                password='Stanislav24',
-                db=db,
-                charset='utf8mb4',
-                cursorclass=pymysql.cursors.DictCursor,
-                autocommit=False
-            )
+        # Try to get your remote database URL from the environment.
+        # On Heroku, you can set DATABASE_URL or JAWSDB_URL.
+        # Otherwise, it will fall back to the hard-coded AWS RDS connection string.
+        db_url = os.environ.get("JAWSDB_URL") or os.environ.get("DATABASE_URL") or \
+                 "mysql://x01qsgk792vgfrtd:bn9f9ptf7o18t3lj@d6vscs19jtah8iwb.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/q3ef4i79gf4fl3e7"
+        
+        url = urlparse(db_url)
+        connection = pymysql.connect(
+            host=url.hostname,
+            port=url.port or 3306,
+            user=url.username,
+            password=url.password,
+            db=url.path.lstrip('/'),
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor,
+            autocommit=False
+        )
         self.connection = connection
 
     def query_db(self, query: str, data: dict = None):
         with self.connection.cursor() as cursor:
             try:
+                # Prepare the query with provided data, if any.
                 query = cursor.mogrify(query, data)
                 print("Running Query:", query)
                 cursor.execute(query)
-                if query.lower().find("insert") >= 0:
+                # For insert queries, commit and return the lastrow id.
+                if "insert" in query.lower():
                     self.connection.commit()
                     return cursor.lastrowid
-                elif query.lower().find("select") >= 0:
+                # For select queries, fetch and return all results.
+                elif "select" in query.lower():
                     result = cursor.fetchall()
                     return result
+                # For update or delete queries, commit changes.
                 else:
                     self.connection.commit()
             except Exception as e:
