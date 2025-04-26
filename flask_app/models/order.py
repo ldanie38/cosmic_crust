@@ -1,6 +1,6 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 
-db = "pizza_system"
+db = "q3ef4i79gf4fl3e7"
 
 class Order:
     def __init__(self, data):
@@ -11,17 +11,32 @@ class Order:
         self.quantity = data['quantity']
         self.created_at = data['created_at']
         self.instructions = data.get("instructions")
+        
+
     
-
-
-
     @classmethod
     def place_order(cls, data):
+        print("🔎 Data Being Inserted into Orders:", data)  # ✅ Debugging before insert
+        
         query = '''
             INSERT INTO orders (customer_id, pizza_name, size, quantity, instructions)
-            VALUES (%(customer_id)s, %(pizza_name)s, %(size)s, %(quantity)s, %(instructions)s);
+            VALUES (%(customer_id)s, %(pizza_name)s, %(size)s, %(quantity)s);
         '''
-        return connectToMySQL(db).query_db(query, data)
+        connection = connectToMySQL("q3ef4i79gf4fl3e7")
+
+        # 🔥 Print the formatted query for debugging
+        formatted_query = query % data
+        print("🔍 Running Query in Flask:", formatted_query)
+
+        new_order_id = connection.query_db(query, data)
+        print("✅ Inserted Order ID:", new_order_id)  # 🔥 Debugging after insert
+
+        return new_order_id
+
+
+
+
+
 
 
     @classmethod
@@ -29,18 +44,29 @@ class Order:
         query = "SELECT * FROM orders WHERE customer_id = %(customer_id)s;"
         results = connectToMySQL(db).query_db(query, {"customer_id": customer_id})
         
-        orders = []
-        for order_data in results:
-            orders.append(cls(order_data))
+        orders = [cls(order_data) for order_data in results]  # Optimized list creation
         return orders
     
     @classmethod
     def get_by_id(cls, data):
-        query = "SELECT * FROM orders WHERE id = %(order_id)s;"
-        results = connectToMySQL(db).query_db(query, data)
-        return cls(results[0]) if results else None
-    
-    
+        print("Fetching Order with Data:", data)  # ✅ Debugging output
+
+        # 🔥 Fix: Ensure `data` is a dictionary with a single key-value pair
+        if isinstance(data, dict) and "order_id" in data:
+            query = "SELECT * FROM orders WHERE id = %(order_id)s;"
+            results = connectToMySQL(db).query_db(query, data)
+            
+            if results:
+                print("Order Found:", results[0])
+                return cls(results[0])
+            
+            print("⚠️ No Order Found")
+            return None
+        else:
+            print("❌ Incorrect Data Format:", data)
+            return None
+
+
     @classmethod
     def get_last_order_by_customer(cls, customer_id):
         query = """
@@ -49,12 +75,5 @@ class Order:
             ORDER BY created_at DESC
             LIMIT 1;
         """
-        data = {"customer_id": customer_id}
-        results = connectToMySQL(db).query_db(query, data)
-        if results:
-            return cls(results[0])
-        return None
-
-
-
-
+        results = connectToMySQL(db).query_db(query, {"customer_id": customer_id})
+        return cls(results[0]) if results else None

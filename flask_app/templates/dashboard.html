@@ -10,10 +10,11 @@
 <body>
     <h1>Welcome, {{ user.first_name }}! 🚀 Cosmic Crust - Order Your Favorite Pizza!</h1>
 
-    <h2>Place a New Order</h2>
 
     {% if current_order %}
     <section class="current-order">
+      <p>Debugging Current Order: {{ current_order }}</p>
+
       <h2>Current Order</h2>
       <p><strong>Pizza:</strong> {{ current_order.pizza_name }}</p>
       <p><strong>Size:</strong> {{ current_order.size }}</p>

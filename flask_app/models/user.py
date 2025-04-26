@@ -2,7 +2,8 @@ from flask_app.config.mysqlconnection import connectToMySQL
 import re
 from flask import flash
 
-db = "pizza_system"
+db = "q3ef4i79gf4fl3e7"
+
 
 # Email validation regex
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
