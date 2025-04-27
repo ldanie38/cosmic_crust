@@ -13,25 +13,33 @@ class Order:
         self.instructions = data.get("instructions")
         
 
-    
+        
     @classmethod
     def place_order(cls, data):
         print("🔎 Data Being Inserted into Orders:", data)  # ✅ Debugging before insert
-        
+
         query = '''
             INSERT INTO orders (customer_id, pizza_name, size, quantity, instructions)
-            VALUES (%(customer_id)s, %(pizza_name)s, %(size)s, %(quantity)s);
+            VALUES (%(customer_id)s, %(pizza_name)s, %(size)s, %(quantity)s, %(instructions)s);
         '''
-        connection = connectToMySQL("q3ef4i79gf4fl3e7")
-
-        # 🔥 Print the formatted query for debugging
-        formatted_query = query % data
-        print("🔍 Running Query in Flask:", formatted_query)
-
+        
+        connection = connectToMySQL(db)  # ✅ Ensure correct DB name!
         new_order_id = connection.query_db(query, data)
+
         print("✅ Inserted Order ID:", new_order_id)  # 🔥 Debugging after insert
 
+        # 🔥 Force retrieval of last inserted order ID if `query_db()` doesn't return it
+        if not new_order_id:
+            last_id_query = "SELECT LAST_INSERT_ID() AS id;"
+            last_id_result = connection.query_db(last_id_query)
+
+            print("🔍 Forced Order ID Retrieval:", last_id_result)  # ✅ Debugging retrieval
+            return last_id_result[0]['id'] if last_id_result else None
+
         return new_order_id
+
+
+
 
 
 
@@ -49,22 +57,21 @@ class Order:
     
     @classmethod
     def get_by_id(cls, data):
-        print("Fetching Order with Data:", data)  # ✅ Debugging output
+        print("🔎 Fetching Order with Data:", data)  
 
-        # 🔥 Fix: Ensure `data` is a dictionary with a single key-value pair
-        if isinstance(data, dict) and "order_id" in data:
-            query = "SELECT * FROM orders WHERE id = %(order_id)s;"
-            results = connectToMySQL(db).query_db(query, data)
-            
-            if results:
-                print("Order Found:", results[0])
-                return cls(results[0])
-            
-            print("⚠️ No Order Found")
-            return None
-        else:
-            print("❌ Incorrect Data Format:", data)
-            return None
+        query = "SELECT * FROM orders WHERE id = %(order_id)s;"
+        print("🚀 Running Query in Flask:", query % data)  # ✅ Debugging query format
+        results = connectToMySQL(db).query_db(query, data)
+
+        print("🔍 Query Results:", results)  # ✅ Debugging output
+
+        if results:
+            print("✅ Order Found:", results[0])
+            return cls(results[0])
+
+        print("⚠️ No Order Found")
+        return None
+
 
 
     @classmethod

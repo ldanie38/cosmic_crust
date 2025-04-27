@@ -1,6 +1,4 @@
 
-        #db_url = os.environ.get("JAWSDB_URL") or os.environ.get("DATABASE_URL") or \
-                 #"mysql://x01qsgk792vgfrtd:bn9f9ptf7o18t3lj@d6vscs19jtah8iwb.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/q3ef4i79gf4fl3e7"
        
 import os
 import pymysql.cursors
@@ -16,6 +14,8 @@ class MySQLConnection:
 
         if not db_url:
             raise ValueError("Database URL not found in environment variables.")
+            test_query = "SELECT @@hostname AS db_host;"
+
 
         url = urlparse(db_url)
         self.connection = pymysql.connect(
@@ -26,7 +26,7 @@ class MySQLConnection:
             db=url.path.lstrip('/'),
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor,
-            autocommit=False
+            autocommit=True
         )
 
     def query_db(self, query: str, data: dict = None):

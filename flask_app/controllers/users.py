@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, request, session, redirect, flash
 from flask_app.config.mysqlconnection import connectToMySQL   
+
 from flask_app import app
 from flask_app.models.user import User
 from flask_app.models.order import Order  
@@ -42,16 +43,19 @@ def dashboard():
     user = User.get_by_id(session["user_id"])
 
     current_order = None
-    if "current_order" in session:
-        data = {"order_id": session["current_order"]}
+    order_id = session.get("current_order")  # ✅ Retrieve stored order ID
+    if order_id:
+        data = {"order_id": order_id}
         current_order = Order.get_by_id(data)
         session.pop("current_order", None)  # Remove after retrieving
-    
-    return render_template("dashboard.html", user=user, current_order=current_order)
+
+    return render_template("dashboard.html", user=user, current_order=current_order, order_id=order_id)
+
 
 @app.route('/login')
 def login():
     return render_template('login.html')
+
 
 
 @app.route('/login_user', methods=['POST'])
@@ -76,6 +80,40 @@ def logout():
     return redirect('/')
 
 
+@app.route('/order_pizza', methods=['POST'])
+def order_pizza():
+    if "user_id" not in session:
+        flash("Please log in before placing an order.", "error")
+        return redirect('/')
+
+    print("✅ Confirming Session User ID Before Order:", session["user_id"])  
+
+    # Validate form data before accessing
+    required_fields = ["pizza_name", "size", "quantity"]
+    if not all(field in request.form for field in required_fields):
+        flash("Incomplete order details.", "error")
+        return redirect('/dashboard')
+
+    data = {
+        "customer_id": session["user_id"],
+        "pizza_name": request.form["pizza_name"],
+        "size": request.form["size"],
+        "quantity": request.form["quantity"],
+        "instructions": request.form.get("instructions", "")  
+    }
+
+    print("🔎 Data Sent to `place_order()`: ", data)  
+
+    new_order_id = Order.place_order(data)  # ✅ Get correct order ID
+    session["current_order"] = new_order_id  # ✅ Store the ID properly
+
+    if not new_order_id:
+        flash("Failed to place order.", "error")
+        return redirect('/dashboard')
+
+    print("✅ New Order ID:", new_order_id)  
+    return redirect('/dashboard')
+
 @app.route('/order/<int:order_id>')
 def order_details(order_id):
     if "user_id" not in session:
@@ -90,53 +128,19 @@ def order_details(order_id):
     
     return render_template("order.html", order=order)
 
-@app.route('/order_pizza', methods=['POST'])
-def order_pizza():
-    if "user_id" not in session:
-        flash("Please log in before placing an order.", "error")
-        return redirect('/')
-
-    print("✅ Confirming Session User ID Before Order:", session["user_id"])  # 🔥 Debugging session
-    
-    data = {
-        "customer_id": session["user_id"],  # ✅ Ensure this is correctly retrieved!
-        "pizza_name": request.form["pizza_name"],
-        "size": request.form["size"],
-        "quantity": request.form["quantity"],
-        "instructions": request.form.get("instructions", "") 
-    }
-
-    print("🔎 Data Sent to `place_order()`: ", data)  # ✅ Debugging data passing
-
-    new_order_id = Order.place_order(data)
-    session["current_order"] = new_order_id  # ✅ Ensure the stored order ID is correct
-    
-    print("✅ New Order ID:", new_order_id)  # 🔥 Debugging output
-
-    if not new_order_id:
-        flash("Failed to place order.", "error")
-        return redirect('/dashboard')
-
-    return redirect('/dashboard')
 
 
 @app.route('/debug_db')
 def debug_db():
-    try:
-        print("🚀 Flask Debugging: This prints before the database check")
-        connection = connectToMySQL("q3ef4i79gf4fl3e7")
-        db_name = connection.query_db("SELECT DATABASE();")
-        print("Connected to Database:", db_name)
-        print("✅ Flask Debugging: This prints after the database check")
-        
-        tables = connection.query_db("SHOW TABLES;")
-        print("Tables in Database:", tables)  # ✅ Debugging output
-        
-        return f"Database: {db_name}, Tables: {tables}"
+    connection = connectToMySQL("db")  # ✅ Ensure correct DB name!
+    db_name = connection.query_db("SELECT DATABASE();")
+    print("🔥 Connected to Database:", db_name)  # Debugging output
     
-    except Exception as e:
-        print("❌ Database Connection Error:", e)  # 🔥 Debugging connection failure
-        return f"Database Error: {e}"
+    tables = connection.query_db("SHOW TABLES;")
+    print("🛠 Tables in Current Database:", tables)  
+    
+    return f"Database: {db_name}, Tables: {tables}"
+
 
 
 

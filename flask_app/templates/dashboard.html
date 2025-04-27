@@ -3,81 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Dashboard</title>
+    <title>Pizza Dashboard - Cosmic Crust</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
 </head>
 <body>
     <h1>Welcome, {{ user.first_name }}! 🚀 Cosmic Crust - Order Your Favorite Pizza!</h1>
 
-
     {% if current_order %}
     <section class="current-order">
-      <p>Debugging Current Order: {{ current_order }}</p>
-
-      <h2>Current Order</h2>
-      <p><strong>Pizza:</strong> {{ current_order.pizza_name }}</p>
-      <p><strong>Size:</strong> {{ current_order.size }}</p>
-      <p><strong>Quantity:</strong> {{ current_order.quantity }}</p>
-      <p><strong>Order Date:</strong> {{ current_order.created_at.strftime("%B %d, %Y %H:%M") }}</p>
-      <p><strong>Special Instructions:</strong> {{ current_order.instructions or "None" }}</p>
-      <p>
-        <a href="{{ url_for('order_details', order_id=current_order.id) }}">View Order Details</a>
-      </p>
+        <h2>Current Order</h2>
+        <p><strong>Pizza:</strong> {{ current_order.pizza_name }}</p>
+        <p><strong>Size:</strong> {{ current_order.size }}</p>
+        <p><strong>Quantity:</strong> {{ current_order.quantity }}</p>
+        <p><strong>Order Date:</strong> {{ current_order.created_at.strftime("%B %d, %Y %H:%M") }}</p>
+        <p><strong>Special Instructions:</strong> {{ current_order.instructions or "None" }}</p>
+        
+        <p>
+            <a href="{{ url_for('order_details', order_id=current_order.id) }}">View Order Details</a>
+        </p>
     </section>
-  {% else %}
+    {% else %}
     <section class="no-orders">
-      <h2>No Current Order</h2>
+        <h2>No Current Orders</h2>
+  
     </section>
-  {% endif %}
+    {% endif %}
 
-<div class='pizza'>
-    <form action="/order_pizza" method="POST">
-        <label for="pizza_name">Choose Your Pizza:</label>
-        <select id="pizza_name" name="pizza_name" required>
-            <option value="Margherita">Margherita</option>
-            <option value="Pepperoni">Pepperoni</option>
-            <option value="BBQ Chicken">BBQ Chicken</option>
-            <option value="Veggie">Veggie</option>
-        </select>
+    <div class='pizza'>
+        <form action="/order_pizza" method="POST">
+            <label for="pizza_name">Choose Your Pizza:</label>
+            <select id="pizza_name" name="pizza_name" required>
+                <option value="Margherita">Margherita</option>
+                <option value="Pepperoni">Pepperoni</option>
+                <option value="BBQ Chicken">BBQ Chicken</option>
+                <option value="Veggie">Veggie</option>
+            </select>
 
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" name="quantity" min="1" required>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" min="1" required>
 
-        <label for="size">Choose Pizza Size:</label>
-        <select id="size" name="size" required>
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
-        </select>
+            <label for="size">Choose Pizza Size:</label>
+            <select id="size" name="size" required>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+            </select>
 
-        <h3>Select Toppings:</h3>
-        <label><input type="checkbox" name="toppings" value="pepperoni"> Pepperoni</label><br>
-        <label><input type="checkbox" name="toppings" value="mushrooms"> Mushrooms</label><br>
-        <label><input type="checkbox" name="toppings" value="onions"> Onions</label><br>
-        <label><input type="checkbox" name="toppings" value="olives"> Olives</label><br>
+            <h3>Special Instructions:</h3>
+            <textarea name="instructions" rows="3" placeholder="Add any special requests..."></textarea>
 
-        <h3>Special Instructions:</h3>
-        <textarea name="instructions" rows="3" placeholder="Add any special requests..."></textarea>
+            <br><br>
+            <button type="submit">Place Order</button>
+        </form>
+        <img src="{{ url_for('static', filename='img/pizza.jpg') }}" alt="A delicious cosmic pizza" width="400">
+    </div>
 
-        <br><br>
-        <button type="submit">Place Order</button>
-    </form>
-    <img src="static/img/pizza.jpg" alt="A delicious cosmic pizza" width="400">
-
-</div>
-      
-      
-
-   
-    <!-- Signed Out Link -->
-    <a href="/logout" id="signOutLink">Sign Out</a>
-
-
-
-
-
-
-
+    <br>
+    <p><a href="/logout">Sign Out</a></p>
 </body>
 </html>
